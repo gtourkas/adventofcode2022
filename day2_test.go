@@ -13,7 +13,7 @@ func Test_calcTotalScorePart1InSample(t *testing.T) {
 
 func Test_calcTotalScorePart1InInput(t *testing.T) {
 	lines := readStringFile("day2_input")
-	act := calcTotalScorePart2(lines)
+	act := calcTotalScorePart1(lines)
 	exp := 11449
 	if exp != act {
 		t.Errorf("expected %d but actual is %d", exp, act)
