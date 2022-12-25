@@ -30,16 +30,16 @@ func _parseStackLines(lines []string) []as.Stack {
 	return stacks
 }
 
-type Movement struct {
+type movement struct {
 	crates int
 	from   int
 	to     int
 }
 
-func _parseMovementLines(lines []string) []Movement {
+func _parseMovementLines(lines []string) []movement {
 	var re = regexp.MustCompile(`(?m)^move\s(?P<crates>\d+)\sfrom\s(?P<from>\d+)\sto\s(?P<to>\d+)$`)
 
-	movements := make([]Movement, len(lines))
+	movements := make([]movement, len(lines))
 	for i, l := range lines {
 
 		match := re.FindStringSubmatch(l)
@@ -50,7 +50,7 @@ func _parseMovementLines(lines []string) []Movement {
 			}
 		}
 
-		movements[i] = Movement{}
+		movements[i] = movement{}
 		movements[i].crates, _ = strconv.Atoi(result["crates"])
 		movements[i].from, _ = strconv.Atoi(result["from"])
 		movements[i].to, _ = strconv.Atoi(result["to"])
@@ -58,14 +58,14 @@ func _parseMovementLines(lines []string) []Movement {
 	return movements
 }
 
-func moveOneByOne(movement Movement, stacks []as.Stack) {
+func moveOneByOne(movement movement, stacks []as.Stack) {
 	for c := 0; c < movement.crates; c++ {
 		crateOut, _ := stacks[movement.from-1].Pop()
 		stacks[movement.to-1].Push(crateOut)
 	}
 }
 
-func moveAllTogether(movement Movement, stacks []as.Stack) {
+func moveAllTogether(movement movement, stacks []as.Stack) {
 	queue := aq.New()
 	for c := 0; c < movement.crates; c++ {
 		crateOut, _ := stacks[movement.from-1].Pop()
@@ -77,7 +77,7 @@ func moveAllTogether(movement Movement, stacks []as.Stack) {
 	}
 }
 
-func getTopStacks(lines []string, move func(movement Movement, stacks []as.Stack)) string {
+func getTopStacks(lines []string, move func(movement movement, stacks []as.Stack)) string {
 
 	// parse stacks and movements
 	emptyLine := 0
