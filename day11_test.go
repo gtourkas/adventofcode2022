@@ -20,7 +20,7 @@ func Test_calcMonkeyBusinessInInput_Rounds20_DivideWorryLevel3(t *testing.T) {
 	}
 }
 
-func Test_calcMonkeyBusinessInSample_Rounds2000_DivideWorryLevel1(t *testing.T) {
+func Test_calcMonkeyBusinessInSample_Rounds2000_DivideWorryLevel0(t *testing.T) {
 	lines := readStringFile("day11_sample")
 	act := calcMonkeyBusiness(lines, 10000, 0)
 	exp := 2713310158
@@ -29,7 +29,7 @@ func Test_calcMonkeyBusinessInSample_Rounds2000_DivideWorryLevel1(t *testing.T) 
 	}
 }
 
-func Test_calcMonkeyBusinessInInput_Rounds2000_DivideWorryLevel1(t *testing.T) {
+func Test_calcMonkeyBusinessInInput_Rounds2000_DivideWorryLevel0(t *testing.T) {
 	lines := readStringFile("day11_input")
 	act := calcMonkeyBusiness(lines, 10000, 0)
 	exp := 14106266886
