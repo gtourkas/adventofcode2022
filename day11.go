@@ -27,42 +27,6 @@ type test struct {
 	onFalseThrowToMonkey int
 }
 
-func _parseMonkeyEntry(entry string) monkey {
-	var re = regexp.MustCompile(`(?m)^Monkey\s(?P<id>\d+):\s{3}Starting\sitems:(?P<startingItems>\s(\d+)(,\s*\d+)*)\s{3}Operation:\s(?P<operationResult>\w+)\s=\s(?P<operand1>\w+)\s(?P<operator>[+\-*\/])\s(?P<operand2>\w+)\s{3}Test:\sdivisible\sby\s(?P<divisibleBy>\d+)\s{5}If\strue:\sthrow\sto\smonkey\s(?P<onTrueThrowToMonkey>\d+)\s{5}If\sfalse:\sthrow\sto\smonkey\s(?P<onFalseThrowToMonkey>\d+)$`)
-
-	r := monkey{}
-
-	match := re.FindStringSubmatch(entry)
-	result := make(map[string]string)
-	for j, name := range re.SubexpNames() {
-		if j != 0 && name != "" {
-			result[name] = match[j]
-		}
-	}
-
-	r.id, _ = strconv.Atoi(result["id"])
-
-	startItems := strings.Split(result["startingItems"], ",")
-	r.startingItems = aq.New()
-	for _, s := range startItems {
-		i, _ := strconv.Atoi(strings.TrimSpace(s))
-		r.startingItems.Enqueue(i)
-	}
-
-	r.operation = operation{
-		operand1: result["operand1"],
-		operator: result["operator"],
-		operand2: result["operand2"],
-	}
-
-	r.test = test{}
-	r.test.divisibleBy, _ = strconv.Atoi(result["divisibleBy"])
-	r.test.onTrueThrowToMonkey, _ = strconv.Atoi(result["onTrueThrowToMonkey"])
-	r.test.onFalseThrowToMonkey, _ = strconv.Atoi(result["onFalseThrowToMonkey"])
-
-	return r
-}
-
 func calcMonkeyBusiness(lines []string, rounds int, divideWorryLevel int) int {
 
 	useLCM := false
@@ -73,12 +37,45 @@ func calcMonkeyBusiness(lines []string, rounds int, divideWorryLevel int) int {
 
 	var monkeys []monkey
 	for l := 0; l < len(lines); l += 7 {
-		monkeyEntry := strings.Join(lines[l:l+6], "\n")
-		monkey := _parseMonkeyEntry(monkeyEntry)
+		entry := strings.Join(lines[l:l+6], "\n")
+
+		var re = regexp.MustCompile(`(?m)^Monkey\s(?P<id>\d+):\s{3}Starting\sitems:(?P<startingItems>\s(\d+)(,\s*\d+)*)\s{3}Operation:\s(?P<operationResult>\w+)\s=\s(?P<operand1>\w+)\s(?P<operator>[+\-*\/])\s(?P<operand2>\w+)\s{3}Test:\sdivisible\sby\s(?P<divisibleBy>\d+)\s{5}If\strue:\sthrow\sto\smonkey\s(?P<onTrueThrowToMonkey>\d+)\s{5}If\sfalse:\sthrow\sto\smonkey\s(?P<onFalseThrowToMonkey>\d+)$`)
+
+		monkey := monkey{}
+
+		match := re.FindStringSubmatch(entry)
+		result := make(map[string]string)
+		for j, name := range re.SubexpNames() {
+			if j != 0 && name != "" {
+				result[name] = match[j]
+			}
+		}
+
+		monkey.id, _ = strconv.Atoi(result["id"])
+
+		startItems := strings.Split(result["startingItems"], ",")
+		monkey.startingItems = aq.New()
+		for _, s := range startItems {
+			i, _ := strconv.Atoi(strings.TrimSpace(s))
+			monkey.startingItems.Enqueue(i)
+		}
+
+		monkey.operation = operation{
+			operand1: result["operand1"],
+			operator: result["operator"],
+			operand2: result["operand2"],
+		}
+
+		monkey.test = test{}
+		monkey.test.divisibleBy, _ = strconv.Atoi(result["divisibleBy"])
+		monkey.test.onTrueThrowToMonkey, _ = strconv.Atoi(result["onTrueThrowToMonkey"])
+		monkey.test.onFalseThrowToMonkey, _ = strconv.Atoi(result["onFalseThrowToMonkey"])
+
+		monkeys = append(monkeys, monkey)
+
 		if useLCM {
 			lcm *= monkey.test.divisibleBy
 		}
-		monkeys = append(monkeys, monkey)
 	}
 
 	inspections := make([]int, len(monkeys))
